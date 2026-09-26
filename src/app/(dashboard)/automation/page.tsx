@@ -1,32 +1,50 @@
+import { getRestockWorkflows } from "@/lib/ai/automation";
+import { getSuppliersList } from "@/lib/actions/suppliers";
+import { getSession } from "@/lib/auth/session";
+import { AutomationView } from "@/components/ai/automation-view";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { Cpu } from "lucide-react";
+import { Cpu, ShieldCheck } from "lucide-react";
 
-export default function AutomationPage() {
+export const dynamic = "force-dynamic";
+
+export default async function AutomationPage() {
+  const [workflows, suppliers, session] = await Promise.all([
+    getRestockWorkflows(),
+    getSuppliersList(),
+    getSession(),
+  ]);
+
+  const userRole = session?.role || "OWNER";
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold tracking-tight text-text">AI Restock Automation</h1>
-            <Badge variant="primary">Mandatory AI Feature #3</Badge>
+            <h1 className="text-2xl font-bold tracking-tight text-text">AI Restock Workflow Automation</h1>
+            <Badge variant="primary" className="flex items-center gap-1">
+              <Cpu className="h-3 w-3" />
+              Academic Feature #3
+            </Badge>
           </div>
           <p className="text-xs text-text-muted mt-1">
-            End-to-end low stock detection, demand analysis, draft PO generation, and owner approval workflow.
+            End-to-end multi-step restock automation with 30-day velocity forecasting and Human-in-the-Loop Owner verification.
           </p>
         </div>
+
+        <div className="flex items-center gap-2">
+          <Badge variant="success" className="flex items-center gap-1 text-[11px] py-1 px-2.5">
+            <ShieldCheck className="h-3.5 w-3.5" />
+            Human-in-the-Loop Active
+          </Badge>
+        </div>
       </div>
-      <Card>
-        <CardContent className="flex flex-col items-center justify-center py-16 text-center">
-          <div className="h-12 w-12 rounded-xl bg-primary-subtle text-primary flex items-center justify-center mb-4">
-            <Cpu className="h-6 w-6" />
-          </div>
-          <h3 className="text-base font-semibold text-text">Human-in-the-Loop Restock Automation</h3>
-          <p className="text-xs text-text-muted max-w-md mt-1">
-            Multi-step workflow: DETECTED → ANALYZING → DRAFT_CREATED → PENDING_APPROVAL → APPROVED. AI assists with demand analysis, but purchases require owner signoff.
-          </p>
-        </CardContent>
-      </Card>
+
+      <AutomationView
+        initialWorkflows={workflows}
+        suppliers={suppliers}
+        userRole={userRole}
+      />
     </div>
   );
 }
