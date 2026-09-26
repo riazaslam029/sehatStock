@@ -1,28 +1,34 @@
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
+import { getSuppliersList } from "@/lib/actions/suppliers";
+import { getSession } from "@/lib/auth/session";
+import { SupplierView } from "@/components/suppliers/supplier-view";
 import { Truck } from "lucide-react";
 
-export default function SuppliersPage() {
+export const dynamic = "force-dynamic";
+
+export default async function SuppliersPage() {
+  const session = await getSession();
+  const suppliers = await getSuppliersList();
+  const isOwner = session?.role === "OWNER";
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6 animate-fade-in">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-text">Suppliers</h1>
-          <p className="text-xs text-text-muted mt-1">Pharmaceutical distributors and manufacturer vendor directory.</p>
-        </div>
-        <Badge variant="primary">Vendor Management</Badge>
-      </div>
-      <Card>
-        <CardContent className="flex flex-col items-center justify-center py-16 text-center">
-          <div className="h-12 w-12 rounded-xl bg-primary-subtle text-primary flex items-center justify-center mb-4">
-            <Truck className="h-6 w-6" />
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-subtle text-primary">
+              <Truck className="h-5 w-5" />
+            </div>
+            <h1 className="text-2xl font-bold tracking-tight text-text">
+              Suppliers & Pharmaceutical Distributors
+            </h1>
           </div>
-          <h3 className="text-base font-semibold text-text">Supplier Directory</h3>
-          <p className="text-xs text-text-muted max-w-md mt-1">
-            Supplier contact directory, supplied medicine catalogs, and order history records.
+          <p className="text-xs text-text-muted mt-1">
+            Directory of authorized pharmaceutical manufacturers, distribution terms, and NTN registry.
           </p>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
+
+      <SupplierView suppliers={suppliers} canEdit={isOwner} />
     </div>
   );
 }
