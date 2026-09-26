@@ -1,28 +1,28 @@
+import { getReturnsHistory } from "@/lib/actions/returns";
+import { ReturnsManager } from "@/components/returns/returns-manager";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { RotateCcw } from "lucide-react";
 
-export default function ReturnsPage() {
+export const dynamic = "force-dynamic";
+
+export default async function ReturnsPage() {
+  const history = await getReturnsHistory();
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-text">Returns & Refunds</h1>
-          <p className="text-xs text-text-muted mt-1">Traceable returns against original invoices with stock restoration.</p>
-        </div>
-        <Badge variant="primary">Core P0 Module</Badge>
-      </div>
-      <Card>
-        <CardContent className="flex flex-col items-center justify-center py-16 text-center">
-          <div className="h-12 w-12 rounded-xl bg-primary-subtle text-primary flex items-center justify-center mb-4">
-            <RotateCcw className="h-6 w-6" />
-          </div>
-          <h3 className="text-base font-semibold text-text">Customer Returns & Adjustments</h3>
-          <p className="text-xs text-text-muted max-w-md mt-1">
-            Search invoice by number, validate return eligibility, select batch, record return reason, and restore stock.
+          <h1 className="text-2xl font-bold tracking-tight text-text">Customer Returns & Stock Adjustments</h1>
+          <p className="text-xs text-text-muted mt-1">
+            Traceable returns against original invoices with automatic batch stock restoration & audit logs.
           </p>
-        </CardContent>
-      </Card>
+        </div>
+        <div className="flex items-center gap-2">
+          <Badge variant="primary">Module P0</Badge>
+          <Badge variant="success">Audit Trail Active</Badge>
+        </div>
+      </div>
+
+      <ReturnsManager initialHistory={history} />
     </div>
   );
 }
