@@ -6,20 +6,30 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db:seed": "tsx src/lib/db/run-seed.ts"
   },
   "dependencies": {
+    "@electric-sql/pglite": "^0.5.8",
+    "@neondatabase/serverless": "^1.1.0",
+    "bcryptjs": "^3.0.3",
     "clsx": "^2.1.1",
+    "dotenv": "^18.0.4",
+    "drizzle-orm": "^0.45.3",
+    "jose": "^6.2.12",
     "lucide-react": "^1.48.0",
     "next": "14.2.18",
+    "postgres": "^3.4.9",
     "react": "^18",
     "react-dom": "^18",
     "tailwind-merge": "^3.7.0"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "drizzle-kit": "^0.31.11",
     "eslint": "^8",
     "eslint-config-next": "14.2.18",
     "postcss": "^8",

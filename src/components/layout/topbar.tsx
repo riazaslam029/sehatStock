@@ -5,19 +5,28 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { APP_CONFIG } from "@/lib/constants";
+import { logoutAction } from "@/lib/actions/auth";
 import {
   Menu,
   ShoppingCart,
   Bell,
   Sparkles,
   Building2,
+  LogOut,
 } from "lucide-react";
 
 interface TopbarProps {
   onMenuToggle?: () => void;
+  user?: {
+    name: string;
+    role: "OWNER" | "STAFF";
+    email: string;
+  } | null;
 }
 
-export function Topbar({ onMenuToggle }: TopbarProps) {
+export function Topbar({ onMenuToggle, user }: TopbarProps) {
+  const currentRole = user?.role || "OWNER";
+
   return (
     <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-border bg-surface/95 px-4 md:px-6 backdrop-blur transition-all">
       {/* Left side: Mobile menu toggle + Branch indicator */}
@@ -44,7 +53,7 @@ export function Topbar({ onMenuToggle }: TopbarProps) {
         </div>
       </div>
 
-      {/* Right side: Quick AI Search, POS button, Notifications, Role badge */}
+      {/* Right side: Quick AI Search, POS button, Notifications, Role badge, Logout */}
       <div className="flex items-center gap-2.5">
         {/* Quick AI Search Shortcut */}
         <Link href="/ai-search">
@@ -88,10 +97,26 @@ export function Topbar({ onMenuToggle }: TopbarProps) {
         </Button>
 
         {/* User Role Badge */}
-        <div className="hidden md:flex items-center gap-2 pl-2 border-l border-border">
-          <Badge variant="primary" className="text-[11px] font-semibold">
-            OWNER
+        <div className="flex items-center gap-2 pl-2 border-l border-border">
+          <Badge
+            variant={currentRole === "OWNER" ? "primary" : "info"}
+            className="text-[11px] font-semibold"
+          >
+            {currentRole}
           </Badge>
+
+          {/* Logout Action */}
+          <form action={logoutAction}>
+            <Button
+              type="submit"
+              variant="ghost"
+              size="icon"
+              className="text-text-muted hover:text-danger hover:bg-danger-subtle h-8 w-8"
+              title="Sign out of counter"
+            >
+              <LogOut className="h-4 w-4" />
+            </Button>
+          </form>
         </div>
       </div>
     </header>

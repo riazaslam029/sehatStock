@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { APP_CONFIG, DEMO_USERS } from "@/lib/constants";
+import { APP_CONFIG } from "@/lib/constants";
+import { loginAction, quickDemoLoginAction } from "@/lib/actions/auth";
 import {
   Stethoscope,
   Lock,
@@ -15,31 +16,49 @@ import {
   Cpu,
   Bot,
   ArrowRight,
+  AlertCircle,
 } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = React.useState("owner@sehatstock.pk");
-  const [password, setPassword] = React.useState("••••••••••••");
+  const [password, setPassword] = React.useState("demo1234");
   const [selectedRole, setSelectedRole] = React.useState<"OWNER" | "STAFF">("OWNER");
   const [isLoading, setIsLoading] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
 
-  const handleSelectDemoUser = (role: "OWNER" | "STAFF") => {
+  const handleSelectDemoUser = async (role: "OWNER" | "STAFF") => {
     setSelectedRole(role);
-    const user = DEMO_USERS.find((u) => u.role === role);
-    if (user) {
-      setEmail(user.email);
-      setPassword("demo1234");
+    setErrorMessage(null);
+    setIsLoading(true);
+
+    const res = await quickDemoLoginAction(role);
+    if (res.success) {
+      router.push("/dashboard");
+      router.refresh();
+    } else {
+      setIsLoading(false);
+      setErrorMessage(res.error || "Failed to switch demo role.");
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // In Phase 1 shell, redirect directly to dashboard
-    setTimeout(() => {
+    setErrorMessage(null);
+
+    const formData = new FormData();
+    formData.append("email", email);
+    formData.append("password", password);
+
+    const res = await loginAction(formData);
+    if (res.success) {
       router.push("/dashboard");
-    }, 600);
+      router.refresh();
+    } else {
+      setIsLoading(false);
+      setErrorMessage(res.error || "Login failed.");
+    }
   };
 
   return (
@@ -72,11 +91,12 @@ export default function LoginPage() {
               <span>Demo Quick-Login (Evaluation Presets)</span>
             </div>
             <p className="text-text-muted text-[11px] mb-2.5">
-              Select a pre-configured role to inspect permission-based features:
+              Click either role to immediately log in with verified database credentials:
             </p>
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
+                disabled={isLoading}
                 onClick={() => handleSelectDemoUser("OWNER")}
                 className={`flex flex-col items-start p-2 rounded border text-left transition-all ${
                   selectedRole === "OWNER"
@@ -89,6 +109,7 @@ export default function LoginPage() {
               </button>
               <button
                 type="button"
+                disabled={isLoading}
                 onClick={() => handleSelectDemoUser("STAFF")}
                 className={`flex flex-col items-start p-2 rounded border text-left transition-all ${
                   selectedRole === "STAFF"
@@ -101,6 +122,13 @@ export default function LoginPage() {
               </button>
             </div>
           </div>
+
+          {errorMessage && (
+            <div className="mb-4 flex items-center gap-2 rounded-md bg-danger-subtle border border-danger/20 p-2.5 text-xs text-danger">
+              <AlertCircle className="h-4 w-4 shrink-0" />
+              <span>{errorMessage}</span>
+            </div>
+          )}
 
           {/* Login Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
