@@ -1,28 +1,30 @@
+import { SettingsView } from "@/components/settings/settings-view";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
 import { Settings } from "lucide-react";
+
+export const dynamic = "force-dynamic";
 
 export default function SettingsPage() {
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6 animate-fade-in">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-text">System Settings</h1>
-          <p className="text-xs text-text-muted mt-1">Configure discount thresholds, pharmacy branch profile, and AI parameters.</p>
-        </div>
-        <Badge variant="primary">Owner Only</Badge>
-      </div>
-      <Card>
-        <CardContent className="flex flex-col items-center justify-center py-16 text-center">
-          <div className="h-12 w-12 rounded-xl bg-primary-subtle text-primary flex items-center justify-center mb-4">
-            <Settings className="h-6 w-6" />
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-subtle text-primary">
+              <Settings className="h-5 w-5" />
+            </div>
+            <h1 className="text-2xl font-bold tracking-tight text-text">
+              Pharmacy System Settings
+            </h1>
+            <Badge variant="primary">Owner Only</Badge>
           </div>
-          <h3 className="text-base font-semibold text-text">Configuration Center</h3>
-          <p className="text-xs text-text-muted max-w-md mt-1">
-            Staff discount threshold limit (default: 3%), receipt footer details, low stock threshold formulas, and tax rates.
+          <p className="text-xs text-text-muted mt-1">
+            Configure cashier discount limits, pharmacy tax credentials, and AI operational parameters.
           </p>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
+
+      <SettingsView />
     </div>
   );
 }
